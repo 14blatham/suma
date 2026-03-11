@@ -1,117 +1,154 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowUpRight, ArrowDownRight, Minus, RefreshCw, MoveRight } from 'lucide-react';
-import { Card } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
 import { useDataContext } from '../../context/DataContext';
-import { MOCK_KPIS, MOCK_TREND, MOCK_ROWS } from '../../services/api';
+import { MOCK_KPIS, MOCK_TREND } from '../../services/api';
 import { Routes } from '../../router/routes';
 
-function DeltaIcon({ positive, neutral }: { positive: boolean; neutral: boolean }) {
-  if (neutral) return <Minus className="w-3 h-3 text-[#7A6B5D]" />;
-  return positive
-    ? <ArrowUpRight className="w-3 h-3 text-[#8B7355]" />
-    : <ArrowDownRight className="w-3 h-3 text-[#C97B7B]" />;
+/*
+ * The dashboard is an instrument panel, not a poster.
+ *
+ * Hierarchy:
+ *   1. The four numbers — at a glance, the state of things
+ *   2. The 7-day trend — direction over time
+ *   3. The most recent entries — ground-level detail
+ *
+ * No decorative elements. No illustrations. No cards competing for attention.
+ * White space does the grouping.
+ */
+
+function Stat({ label, value, delta, positive }: {
+  label: string; value: string; delta: string; positive: boolean;
+}) {
+  return (
+    <div>
+      <div className="text-xl font-semibold tabular-nums mb-0.5" style={{ color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>
+        {value}
+      </div>
+      <div className="text-xs mb-1" style={{ color: 'var(--text-2)' }}>{label}</div>
+      {delta !== '—' && (
+        <div className="text-xs" style={{ color: positive ? 'var(--ink)' : 'var(--error)' }}>
+          {positive ? '+' : ''}{delta}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function DashboardView() {
-  const { isLoading, error, refresh, filtered } = useDataContext();
+  const { filtered, isLoading, error, refresh } = useDataContext();
   const navigate = useNavigate();
 
-  // Sparkline: normalise sessions to 0–32px height
+  // Spark: normalise to 0–36px
   const max = Math.max(...MOCK_TREND.map(p => p.sessions));
-  const spark = MOCK_TREND.map(p => Math.round((p.sessions / max) * 32));
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full gap-4 bg-[#F5F0E8]">
-        <p className="text-[#C97B7B] text-sm">{error}</p>
-        <Button variant="outline" onClick={refresh}>Retry</Button>
-      </div>
-    );
-  }
 
   return (
-    <div className="p-6 bg-[#F5F0E8] h-full overflow-y-auto">
+    <div className="p-6" style={{ color: 'var(--text)' }}>
+
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-baseline justify-between mb-8">
         <div>
-          <h2 className="text-xl font-bold text-[#2C2420]">Dashboard</h2>
-          <p className="text-xs text-[#7A6B5D]">Mar 1 – Mar 8, 2026</p>
+          <h2 className="text-lg" style={{ fontFamily: 'Georgia, serif' }}>Overview</h2>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-2)' }}>Mar 1 – Mar 8, 2026</p>
         </div>
         <button
           onClick={refresh}
-          aria-label="Refresh data"
-          className={`p-2 rounded-lg text-[#7A6B5D] hover:bg-[#EDE6D6] transition-colors ${isLoading ? 'animate-spin' : ''}`}
+          disabled={isLoading}
+          className="text-xs px-3 py-1.5 rounded border transition-colors duration-100"
+          style={{
+            color: 'var(--text-2)',
+            borderColor: 'var(--border)',
+            background: 'transparent',
+            cursor: isLoading ? 'not-allowed' : 'pointer',
+            opacity: isLoading ? 0.5 : 1,
+          }}
         >
-          <RefreshCw className="w-4 h-4" />
+          {isLoading ? 'Loading…' : 'Refresh'}
         </button>
       </div>
 
-      {/* KPI grid */}
-      <div className="grid grid-cols-2 gap-3 mb-8">
-        {MOCK_KPIS.map((kpi) => (
-          <Card key={kpi.label} className="p-4">
-            <p className="text-xs text-[#7A6B5D] mb-2">{kpi.label}</p>
-            <p className="text-2xl font-bold text-[#2C2420] mb-1">{kpi.value}</p>
-            <div className="flex items-center gap-1">
-              <DeltaIcon positive={kpi.positive} neutral={kpi.delta === '—'} />
-              <span className={`text-xs font-medium ${kpi.delta === '—' ? 'text-[#7A6B5D]' : kpi.positive ? 'text-[#8B7355]' : 'text-[#C97B7B]'}`}>
-                {kpi.delta}
-              </span>
-            </div>
-          </Card>
+      {error && (
+        <p className="text-sm mb-6" style={{ color: 'var(--error)' }}>{error}</p>
+      )}
+
+      {/* Stat grid — four numbers, equal weight */}
+      <div className="grid grid-cols-2 gap-x-6 gap-y-6 mb-10">
+        {MOCK_KPIS.map(kpi => (
+          <Stat key={kpi.label} {...kpi} />
         ))}
       </div>
 
-      {/* Sparkline trend */}
-      <Card className="p-4 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-xs font-semibold text-[#7A6B5D] tracking-wide uppercase">Sessions trend</p>
-          <p className="text-xs text-[#7A6B5D]">8 days</p>
-        </div>
-        <div className="flex items-end gap-1 h-10">
-          {spark.map((h, i) => (
+      {/* Separator */}
+      <div className="mb-6" style={{ height: '1px', background: 'var(--border)' }} />
+
+      {/* 7-day trend — a sparkline, not a feature */}
+      <div className="mb-8">
+        <p className="text-xs mb-3" style={{ color: 'var(--text-2)' }}>Sessions · 8 days</p>
+        <div className="flex items-end gap-px" style={{ height: 36 }}>
+          {MOCK_TREND.map((p, i) => (
             <div
               key={i}
-              className="flex-1 bg-[#8B7355]/60 rounded-sm transition-all"
-              style={{ height: `${Math.max(h, 4)}px` }}
+              className="flex-1 transition-none"
+              title={`${p.date}: ${p.sessions}`}
+              style={{
+                height: `${Math.max((p.sessions / max) * 36, 2)}px`,
+                background: 'var(--ink)',
+                opacity: 0.55 + (i / MOCK_TREND.length) * 0.45,
+              }}
             />
           ))}
         </div>
-        <div className="flex justify-between mt-2">
-          <span className="text-[10px] text-[#7A6B5D]">Mar 1</span>
-          <span className="text-[10px] text-[#7A6B5D]">Mar 8</span>
+        <div className="flex justify-between mt-1">
+          <span className="text-xs" style={{ color: 'var(--text-2)' }}>Mar 1</span>
+          <span className="text-xs" style={{ color: 'var(--text-2)' }}>Mar 8</span>
         </div>
-      </Card>
+      </div>
 
-      {/* Recent rows */}
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-semibold text-[#7A6B5D] tracking-wide uppercase">Recent entries</p>
+      {/* Separator */}
+      <div className="mb-5" style={{ height: '1px', background: 'var(--border)' }} />
+
+      {/* Recent data — a compact table, not cards */}
+      <div className="flex items-baseline justify-between mb-3">
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-2)' }}>
+          Recent entries
+        </p>
         <button
           onClick={() => navigate(Routes.EXPLORER)}
-          className="flex items-center gap-1 text-xs text-[#8B7355] hover:underline"
+          className="text-xs transition-colors duration-100"
+          style={{ color: 'var(--ink)', background: 'transparent', border: 'none', cursor: 'pointer' }}
         >
-          View all <MoveRight className="w-3 h-3" />
+          All data →
         </button>
       </div>
-      <div className="space-y-2">
-        {(filtered.length > 0 ? filtered : MOCK_ROWS).slice(0, 5).map((row) => (
-          <Card
-            key={row.id}
-            className="p-3 flex items-center justify-between cursor-pointer hover:bg-[#D6CCB8]/50 transition-colors"
-            onClick={() => navigate(Routes.EXPLORER)}
-          >
-            <div>
-              <p className="text-sm font-medium text-[#2C2420]">{row.region}</p>
-              <p className="text-xs text-[#7A6B5D]">{row.category} · {row.date}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm font-bold text-[#8B7355]">{row.sessions}</p>
-              <p className="text-xs text-[#7A6B5D]">sessions</p>
-            </div>
-          </Card>
-        ))}
-      </div>
+
+      <table style={{ width: '100%' }}>
+        <thead>
+          <tr>
+            <th style={{ textAlign: 'left', paddingBottom: '0.4rem', paddingLeft: 0 }}>Region</th>
+            <th style={{ textAlign: 'left', paddingBottom: '0.4rem' }}>Category</th>
+            <th style={{ textAlign: 'right', paddingBottom: '0.4rem', paddingRight: 0 }}>Sessions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(filtered.length > 0 ? filtered : []).slice(0, 6).map(row => (
+            <tr
+              key={row.id}
+              onClick={() => navigate(Routes.EXPLORER)}
+              style={{ cursor: 'pointer' }}
+              className="hover:opacity-70 transition-opacity duration-75"
+            >
+              <td style={{ paddingLeft: 0, color: 'var(--text)' }}>{row.region}</td>
+              <td style={{ color: 'var(--text-2)', fontSize: '0.8rem' }}>{row.category}</td>
+              <td style={{ textAlign: 'right', paddingRight: 0, fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
+                {row.sessions}
+              </td>
+            </tr>
+          ))}
+          {filtered.length === 0 && !isLoading && (
+            <tr>
+              <td colSpan={3} style={{ color: 'var(--text-2)', paddingLeft: 0 }}>No data.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }

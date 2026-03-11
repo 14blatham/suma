@@ -1,68 +1,84 @@
-import { User, Settings, Download, BookMarked } from 'lucide-react';
-import { Card } from '../../components/ui/Card';
 import { useAppContext } from '../../context/AppContext';
 import { useDataContext } from '../../context/DataContext';
 
+/*
+ * Profile communicates what the user needs to know about their account
+ * and their relationship to the data.
+ *
+ * Structure replaces decoration:
+ *   - Section labels identify groups of information
+ *   - Values sit to the right of their labels (the eye reads left, finds right)
+ *   - A separator line is sufficient to divide sections
+ *
+ * No avatar. No badge. No card container.
+ * The information itself is the profile.
+ */
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between items-baseline py-2.5" style={{ borderBottom: '1px solid var(--border)' }}>
+      <span className="text-sm" style={{ color: 'var(--text-2)' }}>{label}</span>
+      <span className="text-sm font-medium tabular-nums" style={{ color: 'var(--text)' }}>{value}</span>
+    </div>
+  );
+}
+
+function SectionLabel({ children }: { children: string }) {
+  return (
+    <p className="text-xs font-semibold uppercase tracking-wider mt-8 mb-3" style={{ color: 'var(--text-2)', letterSpacing: '0.07em' }}>
+      {children}
+    </p>
+  );
+}
+
 export function ProfileView() {
-  const { user } = useAppContext();
+  const { user, logout } = useAppContext();
   const { dataset } = useDataContext();
 
-  const totalSessions = dataset?.reduce((sum, r) => sum + r.sessions, 0) ?? 0;
-  const avgWellbeing = dataset
-    ? (dataset.reduce((sum, r) => sum + r.wellbeingScore, 0) / dataset.length).toFixed(1)
+  const totalSessions = dataset?.reduce((s, r) => s + r.sessions, 0) ?? 0;
+  const avgWellbeing = dataset && dataset.length > 0
+    ? (dataset.reduce((s, r) => s + r.wellbeingScore, 0) / dataset.length).toFixed(2)
     : '—';
+  const regions = dataset ? [...new Set(dataset.map(r => r.region))].length : 0;
 
   return (
-    <div className="p-8 bg-[#F5F0E8] h-full overflow-y-auto">
-      <header className="mb-10">
-        <div className="w-14 h-14 bg-[#EDE6D6] border border-[#D6CCB8] rounded-xl flex items-center justify-center mb-5">
-          <User className="w-7 h-7 text-[#8B7355]" />
-        </div>
-        <h2 className="text-2xl font-bold text-[#2C2420]">{user?.name}</h2>
-        <p className="text-sm text-[#7A6B5D]">Analyst · Suma Insights</p>
-      </header>
+    <div className="p-6 pb-10" style={{ color: 'var(--text)' }}>
+      <h2 className="text-lg mb-1" style={{ fontFamily: 'Georgia, serif' }}>{user?.name}</h2>
+      <p className="text-xs mb-6" style={{ color: 'var(--text-2)' }}>Analyst · Suma Insights</p>
 
-      <section className="space-y-3 mb-8">
-        <p className="text-xs font-semibold text-[#7A6B5D] tracking-wide uppercase mb-2">Your session stats</p>
-        <Card className="p-4 flex items-center justify-between">
-          <span className="text-sm text-[#2C2420]">Sessions in dataset</span>
-          <span className="font-bold text-[#8B7355]">{totalSessions.toLocaleString()}</span>
-        </Card>
-        <Card className="p-4 flex items-center justify-between">
-          <span className="text-sm text-[#2C2420]">Avg wellbeing score</span>
-          <span className="font-bold text-[#8B7355]">{avgWellbeing}</span>
-        </Card>
-      </section>
+      <SectionLabel>Dataset summary</SectionLabel>
+      <Row label="Total sessions"   value={totalSessions.toLocaleString()} />
+      <Row label="Avg wellbeing"    value={avgWellbeing} />
+      <Row label="Regions covered"  value={String(regions)} />
+      <Row label="Date range"       value="Mar 1 – Mar 8, 2026" />
 
-      <section className="space-y-3 mb-8">
-        <p className="text-xs font-semibold text-[#7A6B5D] tracking-wide uppercase mb-2">Preferences</p>
-        <Card className="p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <BookMarked className="w-4 h-4 text-[#8B7355]" />
-            <span className="text-sm text-[#2C2420]">Saved filters</span>
-          </div>
-          <span className="text-sm text-[#7A6B5D]">3 saved</span>
-        </Card>
-        <Card className="p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Download className="w-4 h-4 text-[#8B7355]" />
-            <span className="text-sm text-[#2C2420]">Export history</span>
-          </div>
-          <span className="text-sm text-[#7A6B5D]">12 exports</span>
-        </Card>
-        <Card className="p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Settings className="w-4 h-4 text-[#8B7355]" />
-            <span className="text-sm text-[#2C2420]">Account settings</span>
-          </div>
-        </Card>
-      </section>
+      <SectionLabel>Preferences</SectionLabel>
+      <Row label="Saved filters"  value="3" />
+      <Row label="Export history" value="12 exports" />
+      <Row label="Display"        value="Compact" />
 
-      <div className="p-5 bg-[#EDE6D6] rounded-xl border border-[#D6CCB8]">
-        <p className="text-xs text-[#7A6B5D] tracking-wide mb-2">Data access</p>
-        <p className="text-sm text-[#2C2420] leading-relaxed">
-          You have read access to the wellbeing dataset. All data is anonymised and aggregated before display.
+      <SectionLabel>Access</SectionLabel>
+      <Row label="Role"        value="Read only" />
+      <Row label="Data access" value="Anonymised aggregates" />
+      <Row label="Encryption"  value="TLS 1.3 in transit" />
+
+      <div className="mt-10">
+        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
+          All data displayed here is anonymised and aggregated at source.
+          No individual-level records are accessible through this interface.
         </p>
+      </div>
+
+      <div className="mt-6">
+        <button
+          onClick={logout}
+          className="text-sm transition-colors duration-100"
+          style={{ color: 'var(--error)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+        >
+          Sign out
+        </button>
       </div>
     </div>
   );
