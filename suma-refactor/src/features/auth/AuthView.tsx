@@ -1,4 +1,4 @@
-import { Video, ShieldCheck } from 'lucide-react';
+import { BarChart2, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { useAppContext } from '../../context/AppContext';
@@ -10,27 +10,27 @@ export function AuthView() {
 
   const handleLogin = () => {
     login({ id: '1', name: 'Alex' });
-    navigate(Routes.LOBBY);
+    navigate(Routes.DASHBOARD);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center bg-[#FAF7F2]">
-      <div className="w-24 h-24 bg-white rounded-[2.5rem] flex items-center justify-center mb-10 shadow-md border border-[#EFEAE4]">
-        <div className="w-16 h-16 bg-[#A8BA9A]/20 rounded-full flex items-center justify-center">
-          <Video className="text-[#A8BA9A] w-8 h-8" />
-        </div>
+    <div className="flex flex-col items-center justify-center min-h-screen p-10 text-center bg-[#F5F0E8]">
+      <div className="w-20 h-20 bg-[#EDE6D6] border border-[#D6CCB8] rounded-xl flex items-center justify-center mb-10">
+        <BarChart2 className="text-[#8B7355] w-9 h-9" />
       </div>
-      <h1 className="text-3xl font-bold text-[#3A4145] mb-4">A Kinder Connection</h1>
-      <p className="text-[#6B7280] mb-12 max-w-[280px] leading-relaxed">
-        A safe, calm space to meet new friends through high-quality video.
+
+      <h1 className="text-3xl font-bold text-[#2C2420] mb-3">Suma Insights</h1>
+      <p className="text-[#7A6B5D] mb-12 max-w-[260px] leading-relaxed text-sm">
+        Calm, focused analytics for understanding wellbeing at scale.
       </p>
-      <div className="w-full max-w-sm space-y-4">
-        <Button className="w-full py-4" onClick={handleLogin}>
-          Enter Peaceful Space
+
+      <div className="w-full max-w-xs space-y-3">
+        <Button className="w-full py-3" onClick={handleLogin}>
+          Sign in
         </Button>
-        <div className="flex items-center justify-center gap-2 text-[#A8BA9A]">
+        <div className="flex items-center justify-center gap-2 text-[#7A6B5D]">
           <ShieldCheck className="w-4 h-4" />
-          <span className="text-xs font-medium uppercase tracking-wider">Safety First Environment</span>
+          <span className="text-xs tracking-wide">Privacy-first platform</span>
         </div>
       </div>
     </div>

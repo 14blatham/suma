@@ -21,7 +21,7 @@ export function QueueView() {
 
   useEffect(() => {
     if (status === 'countdown' && countdown <= 0) {
-      navigate(Routes.CALLING);
+      navigate(Routes.EXPLORER);
     }
   }, [countdown, status, navigate]);
 

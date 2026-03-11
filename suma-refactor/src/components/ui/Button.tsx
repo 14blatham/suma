@@ -6,20 +6,23 @@ interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'outline';
   className?: string;
   disabled?: boolean;
+  type?: 'button' | 'submit' | 'reset';
 }
 
 const variants: Record<NonNullable<ButtonProps['variant']>, string> = {
-  primary: 'bg-[#7FB3D5] text-white hover:bg-[#6FA3C5]',
-  secondary: 'bg-[#A8BA9A] text-white hover:bg-[#99AA8B]',
-  accent: 'bg-[#E5B7B7] text-[#5A4A4A] hover:bg-[#D9A5A5]',
-  ghost: 'bg-transparent text-[#6B7280] hover:bg-[#F4F1EC]',
-  outline: 'bg-transparent border-2 border-[#EFEAE4] text-[#3A4145] hover:bg-[#F4F1EC]',
+  primary:   'bg-[#8B7355] text-[#F5F0E8] hover:bg-[#7A6347]',
+  secondary: 'bg-[#EDE6D6] text-[#2C2420] hover:bg-[#D6CCB8]',
+  accent:    'bg-[#C4956A] text-white hover:bg-[#B5844F]',
+  ghost:     'bg-transparent text-[#7A6B5D] hover:bg-[#EDE6D6]',
+  outline:   'bg-transparent border border-[#D6CCB8] text-[#2C2420] hover:bg-[#EDE6D6]',
 };
 
-export function Button({ children, onClick, variant = 'primary', className = '', disabled = false }: ButtonProps) {
-  const base = 'px-6 py-3 rounded-2xl font-semibold transition-all active:scale-95 disabled:opacity-40 disabled:active:scale-100 flex items-center justify-center gap-2 shadow-sm';
+export function Button({
+  children, onClick, variant = 'primary', className = '', disabled = false, type = 'button',
+}: ButtonProps) {
+  const base = 'px-5 py-2.5 rounded-xl font-semibold text-sm transition-all active:scale-95 disabled:opacity-40 disabled:active:scale-100 flex items-center justify-center gap-2';
   return (
-    <button onClick={onClick} disabled={disabled} className={`${base} ${variants[variant]} ${className}`}>
+    <button type={type} onClick={onClick} disabled={disabled} className={`${base} ${variants[variant]} ${className}`}>
       {children}
     </button>
   );

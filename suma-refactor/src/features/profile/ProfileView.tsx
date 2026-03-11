@@ -1,51 +1,68 @@
-import { User, Settings, Heart, ShieldCheck } from 'lucide-react';
+import { User, Settings, Download, BookMarked } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
 import { useAppContext } from '../../context/AppContext';
+import { useDataContext } from '../../context/DataContext';
 
 export function ProfileView() {
   const { user } = useAppContext();
+  const { dataset } = useDataContext();
+
+  const totalSessions = dataset?.reduce((sum, r) => sum + r.sessions, 0) ?? 0;
+  const avgWellbeing = dataset
+    ? (dataset.reduce((sum, r) => sum + r.wellbeingScore, 0) / dataset.length).toFixed(1)
+    : '—';
 
   return (
-    <div className="p-8 bg-[#FAF7F2] h-full">
-      <div className="flex flex-col items-center mb-12">
-        <div className="relative">
-          <div className="w-28 h-28 rounded-[2.5rem] bg-white flex items-center justify-center mb-6 shadow-md border border-[#EFEAE4]">
-            <User className="w-12 h-12 text-[#A8BA9A]" />
-          </div>
-          <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-[#A8BA9A] rounded-full border-4 border-[#FAF7F2] flex items-center justify-center">
-            <ShieldCheck className="w-4 h-4 text-white" />
-          </div>
+    <div className="p-8 bg-[#F5F0E8] h-full overflow-y-auto">
+      <header className="mb-10">
+        <div className="w-14 h-14 bg-[#EDE6D6] border border-[#D6CCB8] rounded-xl flex items-center justify-center mb-5">
+          <User className="w-7 h-7 text-[#8B7355]" />
         </div>
-        <h2 className="text-2xl font-bold text-[#3A4145]">{user?.name}</h2>
-        <p className="text-[#A8BA9A] font-medium">Safe Space Member</p>
-      </div>
+        <h2 className="text-2xl font-bold text-[#2C2420]">{user?.name}</h2>
+        <p className="text-sm text-[#7A6B5D]">Analyst · Suma Insights</p>
+      </header>
 
-      <div className="space-y-4">
-        <Card className="p-5 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-[#E5B7B7]/10 flex items-center justify-center">
-              <Heart className="text-[#E5B7B7] w-5 h-5" />
-            </div>
-            <span className="text-[#3A4145] font-semibold">Positive Interactions</span>
-          </div>
-          <span className="text-[#A8BA9A] font-bold">124</span>
+      <section className="space-y-3 mb-8">
+        <p className="text-xs font-semibold text-[#7A6B5D] tracking-wide uppercase mb-2">Your session stats</p>
+        <Card className="p-4 flex items-center justify-between">
+          <span className="text-sm text-[#2C2420]">Sessions in dataset</span>
+          <span className="font-bold text-[#8B7355]">{totalSessions.toLocaleString()}</span>
         </Card>
+        <Card className="p-4 flex items-center justify-between">
+          <span className="text-sm text-[#2C2420]">Avg wellbeing score</span>
+          <span className="font-bold text-[#8B7355]">{avgWellbeing}</span>
+        </Card>
+      </section>
 
-        <Card className="p-5 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-[#7FB3D5]/10 flex items-center justify-center">
-              <Settings className="text-[#7FB3D5] w-5 h-5" />
-            </div>
-            <span className="text-[#3A4145] font-semibold">Settings</span>
+      <section className="space-y-3 mb-8">
+        <p className="text-xs font-semibold text-[#7A6B5D] tracking-wide uppercase mb-2">Preferences</p>
+        <Card className="p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <BookMarked className="w-4 h-4 text-[#8B7355]" />
+            <span className="text-sm text-[#2C2420]">Saved filters</span>
+          </div>
+          <span className="text-sm text-[#7A6B5D]">3 saved</span>
+        </Card>
+        <Card className="p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Download className="w-4 h-4 text-[#8B7355]" />
+            <span className="text-sm text-[#2C2420]">Export history</span>
+          </div>
+          <span className="text-sm text-[#7A6B5D]">12 exports</span>
+        </Card>
+        <Card className="p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Settings className="w-4 h-4 text-[#8B7355]" />
+            <span className="text-sm text-[#2C2420]">Account settings</span>
           </div>
         </Card>
+      </section>
 
-        <div className="mt-8 p-6 bg-[#F4F1EC] rounded-3xl border border-[#EFEAE4]">
-          <p className="text-xs text-[#A8BA9A] font-bold uppercase tracking-[0.2em] mb-3">Community Pledge</p>
-          <p className="text-[#6B7280] text-sm leading-relaxed italic">
-            "I pledge to communicate with kindness, listen with empathy, and respect the safety of everyone in the Nexus space."
-          </p>
-        </div>
+      <div className="p-5 bg-[#EDE6D6] rounded-xl border border-[#D6CCB8]">
+        <p className="text-xs text-[#7A6B5D] tracking-wide mb-2">Data access</p>
+        <p className="text-sm text-[#2C2420] leading-relaxed">
+          You have read access to the wellbeing dataset. All data is anonymised and aggregated before display.
+        </p>
       </div>
     </div>
   );

@@ -1,15 +1,14 @@
 export const theme = {
   colors: {
-    bg: '#FAF7F2',
-    surface: '#F4F1EC',
-    border: '#EFEAE4',
-    blue: '#7FB3D5',
-    blueDark: '#6FA3C5',
-    green: '#A8BA9A',
-    greenDark: '#99AA8B',
-    rose: '#E5B7B7',
-    roseDark: '#D9A5A5',
-    text: '#3A4145',
-    textMuted: '#6B7280',
+    bg:          '#F5F0E8',  // warm parchment
+    surface:     '#EDE6D6',  // aged paper
+    border:      '#D6CCB8',  // visible but quiet
+    primary:     '#8B7355',  // warm umber
+    primaryDark: '#7A6347',
+    accent:      '#C4956A',  // candlelight amber — CTA only
+    accentDark:  '#B5844F',
+    danger:      '#C97B7B',  // muted rose — destructive only
+    text:        '#2C2420',  // deep warm charcoal
+    textMuted:   '#7A6B5D',  // faded ink
   },
 } as const;

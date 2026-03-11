@@ -1,10 +1,13 @@
 import { AppContextProvider } from './context/AppContext';
+import { DataContextProvider } from './context/DataContext';
 import { AppRouter } from './router/AppRouter';
 
 export default function App() {
   return (
     <AppContextProvider>
-      <AppRouter />
+      <DataContextProvider>
+        <AppRouter />
+      </DataContextProvider>
     </AppContextProvider>
   );
 }
