@@ -1,0 +1,1 @@
+tempo/node_modules/ echo tempo/dist/ git rm -r --cached tempo/node_modules tempo/dist
