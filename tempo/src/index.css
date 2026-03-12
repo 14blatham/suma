@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/*
+ * TEMPO — design system
+ *
+ * A dating app that removes friction and emotional pressure.
+ * The design must be warm without being artificial.
+ * Calm without being cold. Present without demanding attention.
+ *
+ * Six tokens. The call screen inverts to near-black (faces are the content).
+ */
+:root {
+  --bg:        #F7F4EF;
+  --surface:   #EFEBE4;
+  --border:    #D5CFC6;
+  --text:      #1C1A18;
+  --text-2:    #6B6459;
+  --ink:       #4A3C2E;
+  --ink-hover: #362C21;
+  --error:     #7A3535;
+  --ok:        #3D5840;
+
+  /* Call screen: dark so faces stand out */
+  --call-bg:   #111009;
+  --call-text: #F7F4EF;
+  --call-ctrl: rgba(247,244,239,0.12);
+  --call-ctrl-hover: rgba(247,244,239,0.22);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Fill the viewport on mobile */
+  height: 100%;
+  height: -webkit-fill-available;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  line-height: 1.6;
+  height: 100%;
+  min-height: 100dvh;
+}
+
+#root {
+  height: 100%;
+  min-height: 100dvh;
+}
+
+h1, h2, h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: normal;
+  line-height: 1.3;
+}
+
+input, select, textarea {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 0.93rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.1s;
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--ink);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-2);
+}
+
+textarea { resize: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
