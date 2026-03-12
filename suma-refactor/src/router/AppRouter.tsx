@@ -1,17 +1,28 @@
-import { BrowserRouter, Route, Routes as RouterRoutes, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Video, MessageSquare, User } from 'lucide-react';
+import {
+  BrowserRouter, Route, Routes as RouterRoutes,
+  Navigate, Outlet, useLocation, useNavigate,
+} from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { AuthView } from '../features/auth/AuthView';
-import { QueueView } from '../features/queue/QueueView';
-import { CallView } from '../features/call/CallView';
-import { ChatView } from '../features/chat/ChatView';
-import { ProfileView } from '../features/profile/ProfileView';
-import { Routes } from './routes';
+import { AuthView }      from '../features/auth/AuthView';
+import { DashboardView } from '../features/dashboard/DashboardView';
+import { ExplorerView }  from '../features/explorer/ExplorerView';
+import { InsightsView }  from '../features/insights/InsightsView';
+import { ProfileView }   from '../features/profile/ProfileView';
+import { Routes }        from './routes';
 
+/*
+ * Navigation principle: text labels only.
+ * Icons are abstractions — they make the user interpret.
+ * Words are direct — they tell.
+ *
+ * Active state: a top border tab, not a highlight. 
+ * This is the oldest navigation convention: the physical folder tab.
+ * The user understands it without learning it.
+ */
 const NAV_ITEMS = [
-  { route: Routes.LOBBY, icon: Video, label: 'Discover' },
-  { route: Routes.CHAT, icon: MessageSquare, label: 'Chat' },
-  { route: Routes.PROFILE, icon: User, label: 'Profile' },
+  { route: Routes.DASHBOARD, label: 'Overview'  },
+  { route: Routes.INSIGHTS,  label: 'Insights'  },
+  { route: Routes.PROFILE,   label: 'Profile'   },
 ] as const;
 
 function ProtectedRoute() {
@@ -25,23 +36,35 @@ function AppShell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] text-[#3A4145] font-sans flex flex-col max-w-md mx-auto border-x border-[#EFEAE4] shadow-2xl">
-      <main className="flex-1 overflow-hidden relative">{children}</main>
-      <nav className="bg-white/80 backdrop-blur-xl border-t border-[#EFEAE4] px-10 py-5 flex justify-between items-center rounded-t-[2.5rem]">
-        {NAV_ITEMS.map(({ route, icon: Icon, label }) => {
+    <div
+      className="min-h-screen flex flex-col max-w-md mx-auto"
+      style={{ background: 'var(--bg)', borderLeft: '1px solid var(--border)', borderRight: '1px solid var(--border)' }}
+    >
+      <main className="flex-1 overflow-y-auto">{children}</main>
+
+      <nav
+        className="flex border-t"
+        style={{ borderColor: 'var(--border)', background: 'var(--bg)' }}
+        aria-label="Main navigation"
+      >
+        {NAV_ITEMS.map(({ route, label }) => {
           const active = pathname === route;
           return (
             <button
               key={route}
               onClick={() => navigate(route)}
-              aria-label={label}
               aria-current={active ? 'page' : undefined}
-              className={`flex flex-col items-center gap-1.5 transition-all ${active ? 'text-[#7FB3D5]' : 'text-[#A8BA9A]'}`}
+              className="flex-1 py-3.5 text-sm transition-colors duration-100"
+              style={{
+                color: active ? 'var(--text)' : 'var(--text-2)',
+                fontWeight: active ? 600 : 400,
+                marginTop: '-1px',
+                background: 'transparent',
+                borderTop: active ? '2px solid var(--ink)' : '2px solid transparent',
+                cursor: 'pointer',
+              }}
             >
-              <div className={`p-2 rounded-xl transition-colors ${active ? 'bg-[#7FB3D5]/10' : ''}`}>
-                <Icon className="w-6 h-6" />
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest">{label}</span>
+              {label}
             </button>
           );
         })}
@@ -56,10 +79,11 @@ export function AppRouter() {
       <RouterRoutes>
         <Route path={Routes.AUTH} element={<AuthView />} />
         <Route element={<ProtectedRoute />}>
-          <Route path={Routes.LOBBY} element={<AppShell><QueueView /></AppShell>} />
-          <Route path={Routes.CHAT} element={<AppShell><ChatView /></AppShell>} />
-          <Route path={Routes.PROFILE} element={<AppShell><ProfileView /></AppShell>} />
-          <Route path={Routes.CALLING} element={<CallView />} />
+          <Route path={Routes.DASHBOARD} element={<AppShell><DashboardView /></AppShell>} />
+          <Route path={Routes.INSIGHTS}  element={<AppShell><InsightsView /></AppShell>}  />
+          <Route path={Routes.PROFILE}   element={<AppShell><ProfileView /></AppShell>}   />
+          {/* Explorer is full-screen — no nav chrome, pure focus on data */}
+          <Route path={Routes.EXPLORER}  element={<ExplorerView />} />
         </Route>
       </RouterRoutes>
     </BrowserRouter>

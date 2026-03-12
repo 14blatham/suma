@@ -46,7 +46,7 @@ export function CallView() {
           {isMuted ? <MicOff /> : <Mic />}
         </button>
         <button
-          onClick={() => navigate(Routes.LOBBY)}
+          onClick={() => navigate(Routes.DASHBOARD)}
           aria-label="End call"
           className="w-20 h-20 rounded-[2rem] bg-[#E5B7B7] text-white flex items-center justify-center shadow-lg shadow-[#E5B7B7]/40 hover:bg-[#D9A5A5] transform active:scale-90 transition-all"
         >

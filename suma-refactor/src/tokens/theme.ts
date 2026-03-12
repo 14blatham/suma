@@ -1,15 +1,17 @@
+/*
+ * Six tokens. As little as possible, as much as necessary.
+ * All values mirror CSS custom properties in index.css.
+ * Use CSS vars in components; use this file for TypeScript logic only.
+ */
 export const theme = {
   colors: {
-    bg: '#FAF7F2',
-    surface: '#F4F1EC',
-    border: '#EFEAE4',
-    blue: '#7FB3D5',
-    blueDark: '#6FA3C5',
-    green: '#A8BA9A',
-    greenDark: '#99AA8B',
-    rose: '#E5B7B7',
-    roseDark: '#D9A5A5',
-    text: '#3A4145',
-    textMuted: '#6B7280',
+    bg:       '#F7F4EF',
+    surface:  '#EFEBE4',
+    border:   '#D5CFC6',
+    text:     '#1C1A18',
+    text2:    '#6B6459',
+    ink:      '#4A3C2E',
+    inkHover: '#362C21',
+    error:    '#7A3535',
   },
 } as const;
